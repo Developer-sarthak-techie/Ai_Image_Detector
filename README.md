@@ -124,6 +124,12 @@ src/
 | Styling  | Tailwind CSS                        |
 | Detection| [@aedilic/nonescape](https://www.npmjs.com/package/@aedilic/nonescape) (ONNX, mini model) |
 
+## Troubleshooting
+
+**"Failed to initialize model" or 403 error:** The Nonescape model is hosted on DigitalOcean Spaces and may return 403 in some regions/networks. Workarounds:
+1. Try again later (may be temporary).
+2. Host the model yourself: download `nonescape-mini-v0.onnx` from [Nonescape GitHub](https://github.com/aediliclabs/nonescape), host it on a public URL, and set `VITE_MODEL_URL` in `.env`.
+
 ## Limitations
 
 - **First load:** ~80MB model download (cached by browser).

@@ -1,6 +1,8 @@
 import { LocalClassifier } from '@aedilic/nonescape'
 
-const MINI_MODEL_URL = 'https://nonescape.sfo2.cdn.digitaloceanspaces.com/nonescape-mini-v0.onnx'
+// Nonescape's model at DigitalOcean Spaces returns 403. Set VITE_MODEL_URL in .env
+// to use a custom URL if you host the model (nonescape-mini-v0.onnx) yourself.
+const MODEL_URL = import.meta.env.VITE_MODEL_URL
 
 let classifierInstance: LocalClassifier | null = null
 let initPromise: Promise<void> | null = null
@@ -28,7 +30,7 @@ export async function getClassifier(
 
   initPromise = (async () => {
     classifierInstance = new LocalClassifier({
-      modelPath: MINI_MODEL_URL,
+      ...(MODEL_URL && { modelPath: MODEL_URL }),
       threshold: 0.5,
       onProgress: onProgress
         ? (p) => onProgress({ current: p.current, total: p.total, percent: Math.round((p.current / p.total) * 100) })

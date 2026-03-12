@@ -56,9 +56,11 @@ export function useDetection(): UseDetectionReturn {
   }, [])
 
   const detectFile = useCallback(async (selectedFile: File) => {
-    reset()
-    setError(null)
     setFile(selectedFile)
+    setResult(null)
+    setVideoResults(null)
+    setError(null)
+    setLoadProgress(0)
 
     if (isImage(selectedFile)) {
       setStatus({ phase: 'loading-model', message: 'Loading AI model...' })
@@ -69,7 +71,12 @@ export function useDetection(): UseDetectionReturn {
         setResult(res)
       } catch (err) {
         setStatus({ phase: 'error', message: 'Detection failed' })
-        setError(err instanceof Error ? err.message : 'Unknown error')
+        const msg = err instanceof Error ? err.message : 'Unknown error'
+        setError(
+          msg.includes('Failed to initialize') || msg.includes('403') || msg.includes('fetch')
+            ? `${msg} — The AI model may be temporarily unavailable. Try again later or check your connection.`
+            : msg
+        )
       }
     } else if (isVideo(selectedFile)) {
       setStatus({ phase: 'loading-model', message: 'Loading AI model...' })
@@ -99,7 +106,12 @@ export function useDetection(): UseDetectionReturn {
         setStatus({ phase: 'done', message: 'Analysis complete' })
       } catch (err) {
         setStatus({ phase: 'error', message: 'Detection failed' })
-        setError(err instanceof Error ? err.message : 'Unknown error')
+        const msg = err instanceof Error ? err.message : 'Unknown error'
+        setError(
+          msg.includes('Failed to initialize') || msg.includes('403') || msg.includes('fetch')
+            ? `${msg} — The AI model may be temporarily unavailable. Try again later.`
+            : msg
+        )
       }
     } else {
       setError(
@@ -107,7 +119,7 @@ export function useDetection(): UseDetectionReturn {
       )
       setStatus({ phase: 'error', message: 'Unsupported format' })
     }
-  }, [reset])
+  }, [])
 
   return {
     file,
